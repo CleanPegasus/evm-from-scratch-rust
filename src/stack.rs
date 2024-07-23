@@ -20,7 +20,7 @@ impl Stack {
 
     fn pop(&mut self, n: usize) {
         assert!(self.items.len() > n, "Stack Underflow");
-        (0..n).map(|_| self.items.pop());
+        let _ = (0..n).map(|_| self.items.pop());
     }
 }
 
