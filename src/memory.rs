@@ -1,12 +1,12 @@
 
 
-struct Memory {
+pub struct Memory {
   memory: Vec<u8> 
 }
 
 
 impl Memory {
-  fn new() -> Self {
+  pub fn new() -> Self {
     let memory = Vec::new();
     Self {
       memory
@@ -14,18 +14,18 @@ impl Memory {
   }
 
   /// fetch arbitrary sized data
-  fn access(&self, access: usize, size: usize) -> Vec<u8> {
+  pub fn access(&self, access: usize, size: usize) -> Vec<u8> {
     self.memory[access..access+size].to_vec()
 
   }
 
   /// fetch 32 byte data at offset
-  fn load(&self, offset: usize) -> Vec<u8> {
+  pub fn load(&self, offset: usize) -> Vec<u8> {
     self.access(offset, 32)
   }
 
   /// Store memory and return the gas cost
-  fn store(&mut self, offset: usize, value: Vec<u8>) -> usize {
+  pub fn store(&mut self, offset: usize, value: Vec<u8>) -> usize {
     let mut memory_expansion_cost = 0;
 
     if self.memory.len() <= offset + value.len() {

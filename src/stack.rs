@@ -1,12 +1,12 @@
 use std::fmt::{Display, Result, Formatter};
 
 static MAX_STACK_SIZE: usize = 1024;
-struct Stack {
+pub struct Stack {
     items: Vec<u8>
 }
   
 impl Stack {
-    fn new() -> Self {
+    pub fn new() -> Self {
         let items: Vec<u8> = Vec::new();
         Self {
             items
@@ -14,13 +14,13 @@ impl Stack {
     }
 
     /// Push value to the top of the stack
-    fn push(&mut self, value: u8) {
+    pub fn push(&mut self, value: u8) {
         assert!(self.items.len() <= MAX_STACK_SIZE - 1, "Stack Overflow");
         self.items.push(value);
     }
 
     /// Pop value from the top of the stack
-    fn pop(&mut self, n: usize) {
+    pub fn pop(&mut self, n: usize) {
         assert!(self.items.len() > n, "Stack Underflow");
         let _ = (0..n).map(|_| self.items.pop());
     }
