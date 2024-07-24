@@ -15,10 +15,12 @@ impl Storage {
     Self {storage, cache}
   }
 
+  /// Store U256 value
   fn store(&mut self, key: U256, value: U256) {
     self.storage.insert(key, value);
   }
 
+  /// warm or cold load storage
   fn load(&mut self, key: &U256) -> (bool, U256) {
     let warm = self.cache.contains(key);
     if !warm { self.cache.push(*key) };

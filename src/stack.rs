@@ -2,7 +2,7 @@ use std::fmt::{Display, Result, Formatter};
 
 static MAX_STACK_SIZE: usize = 1024;
 struct Stack {
-    items: Vec<u8> // TODO: Create a custom hex type
+    items: Vec<u8>
 }
   
 impl Stack {
@@ -13,18 +13,20 @@ impl Stack {
         }
     }
 
+    /// Push value to the top of the stack
     fn push(&mut self, value: u8) {
         assert!(self.items.len() <= MAX_STACK_SIZE - 1, "Stack Overflow");
         self.items.push(value);
     }
 
+    /// Pop value from the top of the stack
     fn pop(&mut self, n: usize) {
         assert!(self.items.len() > n, "Stack Underflow");
         let _ = (0..n).map(|_| self.items.pop());
     }
 }
 
-
+/// Display the stack
 impl Display for Stack {
   fn fmt(&self, f: &mut Formatter<'_>) -> Result {
       let len = self.items.len();
