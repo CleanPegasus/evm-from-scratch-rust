@@ -20,9 +20,10 @@ impl Stack {
     }
 
     /// Pop value from the top of the stack
-    pub fn pop(&mut self, n: usize) {
+    pub fn pop(&mut self, n: usize) -> Vec<u8> {
         assert!(self.items.len() > n, "Stack Underflow");
-        let _ = (0..n).map(|_| self.items.pop());
+        let popped_values = (0..n).map(|_| self.items.pop().unwrap()).collect();
+        popped_values
     }
 }
 
