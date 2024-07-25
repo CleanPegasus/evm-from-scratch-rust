@@ -5,3 +5,4 @@ mod storage;
 mod state;
 
 mod types;
+mod opcodes;
