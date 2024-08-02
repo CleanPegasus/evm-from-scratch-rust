@@ -61,52 +61,84 @@ impl EvmState {
 
   pub fn add(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
-    self.stack.push(a + b);
+    let _ = self.stack.push(a + b);
     self.pc += 1;
     self.gas_dec(3);
   }
 
   pub fn sub(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
-    self.stack.push(a - b);
+    let _ = self.stack.push(a - b);
     self.pc += 1;
     self.gas_dec(3);
   }
 
   pub fn mul(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
-    self.stack.push(a * b);
+    let _ = self.stack.push(a * b);
     self.pc += 1;
     self.gas_dec(5);
   }
 
   pub fn div(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
-    self.stack.push(if b == U256::zero() { U256::zero() } else { a / b });
-    self.stack.push(a * b);
+    let _ = self.stack.push(if b == U256::zero() { U256::zero() } else { a / b });
     self.pc += 1;
     self.gas_dec(5);
   }
 
+  fn pos_or_neg(value: U256) -> i32 {
+    if value.bit(255) { -1 } else { 1 }
+  }
+
   pub fn sdiv(&mut self) {
-    unimplemented!("Figure out input types")
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let sign = Self::pos_or_neg(a) * Self::pos_or_neg(b);
+    
+    let result = if b == U256::zero() { U256::zero() } else {
+      let abs_a = if a.bit(255) { !a + U256::one() } else { a };
+      let abs_b = if b.bit(255) { !b + U256::one() } else { b };
+      let abs_result = abs_a / abs_b;
+      if sign < 0 {
+        !abs_result + U256::one()
+      } else {
+        abs_result
+      }
+    };
+    let _ = self.stack.push(result);
+    self.pc += 1;
+    self.gas_dec(5);
   }
 
   pub fn modulo(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
-    self.stack.push(if b == U256::zero() { U256::zero() } else { a % b });
+    let _ = self.stack.push(if b == U256::zero() { U256::zero() } else { a % b });
     self.pc += 1;
     self.gas_dec(5);
   }
 
   pub fn smod(&mut self) {
-    unimplemented!("Figure out input types")
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let sign = Self::pos_or_neg(a) * Self::pos_or_neg(b);
+    let result = if b == U256::zero() { U256::zero() } else {
+      let abs_a = if a.bit(255) { !a + U256::one() } else { a };
+      let abs_b = if b.bit(255) { !b + U256::one() } else { b };
+      let abs_result = abs_a % abs_b;
+      if sign < 0 {
+        !abs_result + U256::one()
+      } else {
+        abs_result
+      }
+    };
+    let _ = self.stack.push(result);
+    self.pc += 1;
+    self.gas_dec(5);
   }
 
   pub fn addmod(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     let n = self.stack.pop().unwrap();
-    self.stack.push((a + b) % n);
+    let _ = self.stack.push((a + b) % n);
     self.pc += 1;
     self.gas_dec(8);
   }
@@ -114,7 +146,7 @@ impl EvmState {
   pub fn mulmod(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     let n = self.stack.pop().unwrap();
-    self.stack.push((a * b) % n);
+    let _ = self.stack.push((a * b) % n);
     self.pc += 1;
     self.gas_dec(8);
   }
