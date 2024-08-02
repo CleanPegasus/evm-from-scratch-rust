@@ -12,7 +12,7 @@ pub struct EvmState {
   storage: Storage,
   sender: EthereumAddress,
   program: Vec<u8>, // TODO create a custom bytecode type
-  gas: U256,
+  gas: u64,
   value: U256,
   calldata: Vec<u8>,
   stop_flag: bool,
@@ -22,7 +22,7 @@ pub struct EvmState {
 }
 
 impl EvmState {
-  pub fn new(sender: EthereumAddress, program: Vec<u8>, gas: U256, value: U256, calldata: Vec<u8>) -> Self {
+  pub fn new(sender: EthereumAddress, program: Vec<u8>, gas: u64, value: U256, calldata: Vec<u8>) -> Self {
     let mut pc = 0;
     let stack = Stack::new();
     let memory = Memory::new();
@@ -51,7 +51,7 @@ impl EvmState {
     }
   }
 
-  fn gas_dec(&mut self, gas_amount: U256) {
+  fn gas_dec(&mut self, gas_amount: u64) {
     self.gas -= gas_amount;
   }
 
@@ -60,32 +60,67 @@ impl EvmState {
   }
 
   pub fn add(&mut self) {
-    let (a, b) = (self.stack.pop(1)[0], self.stack.pop(1)[0]);
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     self.stack.push(a + b);
     self.pc += 1;
-    self.gas_dec(U256::from(3));
+    self.gas_dec(3);
   }
 
   pub fn sub(&mut self) {
-    let (a, b) = (self.stack.pop(1)[0], self.stack.pop(1)[0]);
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     self.stack.push(a - b);
     self.pc += 1;
-    self.gas_dec(U256::from(3));
+    self.gas_dec(3);
   }
 
   pub fn mul(&mut self) {
-    let (a, b) = (self.stack.pop(1)[0], self.stack.pop(1)[0]);
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     self.stack.push(a * b);
     self.pc += 1;
-    self.gas_dec(U256::from(5));
+    self.gas_dec(5);
   }
 
   pub fn div(&mut self) {
-    let (a, b) = (self.stack.pop(1)[0], self.stack.pop(1)[0]);
-    self.stack.push(if b == 0 { 0 } else { a / b });
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    self.stack.push(if b == U256::zero() { U256::zero() } else { a / b });
     self.stack.push(a * b);
     self.pc += 1;
-    self.gas_dec(U256::from(5));
+    self.gas_dec(5);
   }
+
+  pub fn sdiv(&mut self) {
+    unimplemented!("Figure out input types")
+  }
+
+  pub fn modulo(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    self.stack.push(if b == U256::zero() { U256::zero() } else { a % b });
+    self.pc += 1;
+    self.gas_dec(5);
+  }
+
+  pub fn smod(&mut self) {
+    unimplemented!("Figure out input types")
+  }
+
+  pub fn addmod(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let n = self.stack.pop().unwrap();
+    self.stack.push((a + b) % n);
+    self.pc += 1;
+    self.gas_dec(8);
+  }
+
+  pub fn mulmod(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let n = self.stack.pop().unwrap();
+    self.stack.push((a * b) % n);
+    self.pc += 1;
+    self.gas_dec(8);
+  }
+
+  // fn size_in_bytes()
+
+
 
 }
