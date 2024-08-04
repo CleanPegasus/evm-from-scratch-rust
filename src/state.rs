@@ -151,7 +151,26 @@ impl EvmState {
     self.gas_dec(8);
   }
 
-  // fn size_in_bytes()
+  fn size_in_bytes(value: U256) -> usize {
+    if value.is_zero() {
+      return 1
+    }
+    let leading_zeros = value.leading_zeros();
+    let bits_needed = (256 - leading_zeros) as usize;
+    (bits_needed + 7) / 8
+  }
+
+  pub fn exp(&mut self) {
+    let (a, exponent) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(a.pow(exponent));
+    self.pc += 1;
+    self.gas_dec(10 + (50 * Self::size_in_bytes(exponent) as u64))
+  }
+
+
+  pub fn sigextend(&mut self) {
+    unimplemented!()
+  }
 
 
 
