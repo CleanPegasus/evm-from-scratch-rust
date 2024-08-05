@@ -232,5 +232,34 @@ impl EvmState {
     self.gas_dec(3);
   }
 
+  // Logic ops
+  pub fn and(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(a & b);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn or(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(a | b);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn xor(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(a ^ b);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn not(&mut self) {
+    let a = self.stack.pop().unwrap();
+    let _ = self.stack.push(!a);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
 
 }
