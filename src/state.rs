@@ -59,6 +59,7 @@ impl EvmState {
     self.stop_flag = true;
   }
 
+  // Math ops
   pub fn add(&mut self) {
     let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
     let _ = self.stack.push(a + b);
@@ -167,11 +168,69 @@ impl EvmState {
     self.gas_dec(10 + (50 * Self::size_in_bytes(exponent) as u64))
   }
 
-
   pub fn sigextend(&mut self) {
     unimplemented!()
   }
 
+  // comparison
+  pub fn lt(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(if a < b {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  fn unsigned_to_signed(value: U256) -> i128 {
+    if value > U256::from(i128::MAX as u128) {
+        let twos_complement = (!value).overflowing_add(U256::from(1)).0;
+        if twos_complement <= U256::from(i128::MAX as u128) {
+            -(twos_complement.as_u128() as i128)
+        } else {
+            i128::MIN
+        }
+    } else {
+        value.as_u128() as i128
+    }
+}
+
+  pub fn slt(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let a_sig = Self::unsigned_to_signed(a);
+    let b_sig = Self::unsigned_to_signed(b);
+    let _ = self.stack.push(if a_sig < b_sig {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn gt(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(if a > b {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn sgt(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let a_sig = Self::unsigned_to_signed(a);
+    let b_sig = Self::unsigned_to_signed(b);
+    let _ = self.stack.push(if a_sig > b_sig {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn eq(&mut self) {
+    let (a, b) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(if a == b {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn iszero(&mut self) {
+    let a = self.stack.pop().unwrap();
+    let _ = self.stack.push(if a == U256::zero() {U256::one()} else {U256::zero()});
+    self.pc += 1;
+    self.gas_dec(3);
+  }
 
 
 }
