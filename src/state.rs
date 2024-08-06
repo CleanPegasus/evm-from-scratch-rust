@@ -261,5 +261,50 @@ impl EvmState {
     self.gas_dec(3);
   }
 
+  // Bit ops
+
+  pub fn byte(&mut self) {
+    let (i, x) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let result = if i > U256::from(32) {
+      U256::zero()
+    } else {
+      (x / U256::from(256).pow(U256::from(31) - i)) % U256::from(256)
+    };
+    let _ = self.stack.push(result);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn shl(&mut self) { // shift left
+    let (shift, value) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(value << shift);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn shr(&mut self) { // shift right
+    let (shift, value) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let _ = self.stack.push(value >> shift);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn sar(&mut self) { // signed shift right
+    let (shift, value) = (self.stack.pop().unwrap(), self.stack.pop().unwrap());
+    let result = if shift >= U256::from(256) {
+      if value.bit(255) { U256::MAX >> 1 } else { U256::zero() }
+    } else {
+      if value.bit(255) {
+        (value >> shift.as_u32()) | (U256::max_value() << (256 - shift.as_u32()))
+      } else {
+        value >> shift.as_u32()
+      }
+    };
+    let _ = self.stack.push(result);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+
 
 }
