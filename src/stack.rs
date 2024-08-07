@@ -2,10 +2,12 @@ use std::fmt::{Display, Formatter};
 use primitive_types::U256;
 
 static MAX_STACK_SIZE: usize = 1024;
+
+#[derive(Debug)]
 pub struct Stack {
     items: Vec<U256>
 }
-  
+
 impl Stack {
     pub fn new() -> Self {
         Self { items: Vec::new() }

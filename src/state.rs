@@ -19,7 +19,7 @@ pub struct EvmState {
   calldata: Vec<u8>,
   stop_flag: bool,
   revert_flag: bool,
-  return_data: Vec<u8>,
+  return_data: Vec<U256>,
   logs: Vec<u8>
 }
 
@@ -64,8 +64,9 @@ impl EvmState {
   pub fn run(&mut self) {
     
     while self.should_execute_next_opcode() {
+      
       let op: OPCODE = self.peek().try_into().unwrap();
-
+      println!("{:?}", &op);
       match op {
           OPCODE::STOP => {
             self.stop()
@@ -81,8 +82,11 @@ impl EvmState {
       }
     }
 
-    unimplemented!()
+    dbg!(&self.stack);
+
+    // unimplemented!()
   }
+
 
   fn gas_dec(&mut self, gas_amount: u64) {
     self.gas -= gas_amount;

@@ -1,5 +1,6 @@
 use primitive_types::U256;
 
+#[derive(Debug)]
 pub enum OPCODE {
     STOP = 0x00,
     // math opcodes
