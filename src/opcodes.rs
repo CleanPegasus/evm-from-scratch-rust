@@ -1,3 +1,5 @@
+use primitive_types::U256;
+
 pub enum OPCODE {
     STOP = 0x00,
     // math opcodes
@@ -157,4 +159,30 @@ pub enum OPCODE {
     REVERT = 0xFD,
     INVALID = 0xFE,
     SELFDESTRUCT = 0xFF,
+}
+
+impl TryFrom<U256> for OPCODE {
+    type Error = ();
+
+    fn try_from(value: U256) -> Result<Self, Self::Error> {
+        if value > U256::from(u8::MAX) {
+            return Err(());
+        }
+        
+        match value.as_u32() as u8 {
+            0x00 => Ok(OPCODE::STOP),
+            0x01 => Ok(OPCODE::ADD),
+            0x02 => Ok(OPCODE::MUL),
+            0x03 => Ok(OPCODE::SUB),
+            0x60 => Ok(OPCODE::PUSH1),
+            _ => Err(()),
+        }
+    }
+}
+
+
+impl Into<U256> for OPCODE {
+    fn into(self) -> U256 {
+        U256::from(self as u32)
+    }
 }

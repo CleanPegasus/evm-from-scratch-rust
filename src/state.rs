@@ -1,5 +1,7 @@
 use primitive_types::U256;
 
+use crate::opcodes::OPCODE;
+
 use super::types::EthereumAddress;
 use super::stack::Stack;
 use super::memory::Memory;
@@ -11,7 +13,7 @@ pub struct EvmState {
   memory: Memory,
   storage: Storage,
   sender: EthereumAddress,
-  program: Vec<u8>, // TODO create a custom bytecode type
+  program: Vec<U256>, // TODO create a custom bytecode type
   gas: u64,
   value: U256,
   calldata: Vec<u8>,
@@ -22,7 +24,7 @@ pub struct EvmState {
 }
 
 impl EvmState {
-  pub fn new(sender: EthereumAddress, program: Vec<u8>, gas: u64, value: U256, calldata: Vec<u8>) -> Self {
+  pub fn new(sender: EthereumAddress, program: Vec<U256>, gas: u64, value: U256, calldata: Vec<u8>) -> Self {
     let mut pc = 0;
     let stack = Stack::new();
     let memory = Memory::new();
@@ -51,8 +53,51 @@ impl EvmState {
     }
   }
 
+  fn should_execute_next_opcode(&self) -> bool {
+    if self.pc >= self.program.len() as u32 || self.revert_flag || self.stop_flag {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  pub fn run(&mut self) {
+    
+    while self.should_execute_next_opcode() {
+      let op: OPCODE = self.peek().try_into().unwrap();
+
+      match op {
+          OPCODE::STOP => {
+            self.stop()
+          },
+          OPCODE::PUSH1 => {
+            self.push()
+          },
+          OPCODE::ADD => {
+            self.add()
+          },
+          _ => todo!("Implement other opcodes")
+  
+      }
+    }
+
+    unimplemented!()
+  }
+
   fn gas_dec(&mut self, gas_amount: u64) {
     self.gas -= gas_amount;
+  }
+
+  pub fn push(&mut self) {
+    self.pc += 1;
+    let value = self.peek();
+    let _ = self.stack.push(value);
+    self.pc += 1;
+    self.gas_dec(3);
+  }
+
+  pub fn peek(&self) -> U256 {
+    self.program[self.pc as usize]
   }
 
   pub fn stop(&mut self) {
