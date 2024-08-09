@@ -77,12 +77,77 @@ impl EvmState {
           OPCODE::ADD => {
             self.add()
           },
+          OPCODE::SUB => {
+            self.sub()
+          },
+          OPCODE::MUL => {
+            self.mul()
+          },
+          OPCODE::DIV => {
+            self.div()
+          },
+          OPCODE::SDIV => {
+            self.sdiv()
+          },
+          OPCODE::ADDMOD => {
+            self.addmod()
+          },
+          OPCODE::MULMOD => {
+            self.mulmod()
+          },
+          OPCODE::EXP => {
+            self.exp()
+          },
+          OPCODE::SIGNEXTEND => {
+            self.sigextend()
+          },
+          OPCODE::LT => {
+            self.lt()
+          },
+          OPCODE::GT => {
+            self.gt()
+          },
+          OPCODE::SLT => {
+            self.slt()
+          },
+          OPCODE::SGT => {
+            self.sgt()
+          },
+          OPCODE::EQ => {
+            self.eq()
+          },
+          OPCODE::ISZERO => {
+            self.iszero()
+          },
+          OPCODE::AND => {
+            self.and()
+          },
+          OPCODE::OR => {
+            self.or()
+          },
+          OPCODE::XOR => {
+            self.xor()
+          },
+          OPCODE::NOT => {
+            self.not()
+          },
+          OPCODE::BYTE => {
+            self.byte()
+          },
+          OPCODE::SHL => {
+            self.shl()
+          },
+          OPCODE::SHR => {
+            self.shr()
+          },
+          OPCODE::SAR => {
+            self.sar()
+          },
+          
           _ => todo!("Implement other opcodes")
   
       }
     }
-
-    dbg!(&self.stack);
 
     // unimplemented!()
   }
